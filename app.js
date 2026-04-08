@@ -1,3 +1,6 @@
+// Hide empty state properly
+if (emptyState) emptyState.style.display = "none";
+if (tripCard) tripCard.style.display = "block";
 // =======================
 // DOM
 // =======================
