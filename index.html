@@ -30,12 +30,12 @@
     "
   />
 
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="page-shell">
     <header class="site-header">
-      <div id="headerBg" class="header-bg"></div>
+      <div id="headerBg" class="header-bg" aria-hidden="true"></div>
 
       <div class="brand-wrap">
         <div class="brand-pill">Wallpaper → Holiday</div>
@@ -66,7 +66,7 @@
                 name="from"
                 type="text"
                 inputmode="text"
-                maxlength="12"
+                maxlength="4"
                 placeholder="LON or LHR"
                 autocomplete="off"
                 required
@@ -218,69 +218,4 @@
                     <small>Google Maps</small>
                   </a>
                 </div>
-              </section>
-
-              <section class="content-block">
-                <div class="block-head">
-                  <h3>Day-by-day itinerary</h3>
-                  <p id="itineraryIntro">Built from your dates, vibe, and destination type.</p>
-                </div>
-
-                <div id="itineraryDays" class="days-list"></div>
-              </section>
-            </div>
-
-            <aside class="trip-side">
-              <section class="content-block side-block">
-                <div class="block-head">
-                  <h3>Weather read</h3>
-                </div>
-                <div id="weatherPanel" class="weather-panel">
-                  <div class="weather-main">
-                    <strong id="weatherTemp">—</strong>
-                    <span id="weatherDesc">Pulling current conditions…</span>
-                  </div>
-                  <div class="weather-meta" id="weatherMeta"></div>
-                </div>
-              </section>
-
-              <section class="content-block side-block">
-                <div class="block-head">
-                  <h3>Packing note</h3>
-                </div>
-                <p id="packingNote" class="side-copy">Your packing summary will show up here.</p>
-              </section>
-
-              <section class="content-block side-block">
-                <div class="block-head">
-                  <h3>Why this place</h3>
-                </div>
-                <p id="destinationBlurb" class="side-copy">Destination summary goes here.</p>
-                <ul id="highlightList" class="highlight-list"></ul>
-              </section>
-
-              <section class="content-block side-block">
-                <div class="block-head">
-                  <h3>Export</h3>
-                </div>
-                <div class="export-stack">
-                  <button id="exportPngBtn" class="btn btn-primary btn-full" type="button">
-                    Export itinerary as PNG
-                  </button>
-                  <button id="exportPdfBtn" class="btn btn-secondary btn-full" type="button">
-                    Export / save as PDF
-                  </button>
-                </div>
-              </section>
-            </aside>
-          </div>
-        </article>
-      </section>
-    </main>
-  </div>
-
-  <script src="./data/destinations.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="./app.js"></script>
-</body>
-</html>
+              </section
