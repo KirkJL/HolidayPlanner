@@ -1,88 +1,249 @@
+/* =======================
+   BASE / RESET
+======================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  margin: 0;
-  font-family: system-ui;
-  background: #040a13;
-  color: #eef6ff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg, #00111f, #001a2e 40%, #002b45);
+  color: #ffffff;
+  min-height: 100vh;
 }
 
-.site-header {
-  position: relative;
-  padding: 60px 30px;
-  border-radius: 20px;
-  overflow: hidden;
+/* =======================
+   HERO
+======================= */
+header {
+  padding: 40px 20px 20px;
+  text-align: left;
 }
 
-.header-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0.25;
-  filter: blur(6px);
-  transition: 0.6s ease;
+header h1 {
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -1px;
 }
 
-.brand-wrap {
-  position: relative;
-  z-index: 2;
+header p {
+  margin-top: 10px;
+  opacity: 0.75;
+  font-size: 16px;
 }
 
-h1 {
-  font-size: 3rem;
-  margin: 0;
-}
-
-.hero-copy {
-  opacity: 0.7;
-}
-
-.app-grid {
+/* =======================
+   LAYOUT
+======================= */
+.layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 20px;
+  grid-template-columns: 380px 1fr;
+  gap: 28px;
   padding: 20px;
 }
 
-.glass-card {
-  background: rgba(255,255,255,0.04);
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =======================
+   CARD
+======================= */
+.card {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  padding: 20px;
   backdrop-filter: blur(12px);
-  border-radius: 16px;
-  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
-.trip-hero {
-  height: 300px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
+/* =======================
+   FORM
+======================= */
+form {
+  display: grid;
+  gap: 12px;
 }
 
-.hero-content {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
+input, select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 14px;
 }
 
-.trip-card {
-  transition: opacity 0.3s ease;
+input:focus, select:focus {
+  outline: 2px solid #38bdf8;
+  background: rgba(255,255,255,0.12);
 }
 
-.is-hidden {
-  display: none;
-}
-
+/* =======================
+   BUTTONS
+======================= */
 button {
   padding: 12px;
+  border-radius: 14px;
   border: none;
-  border-radius: 10px;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:first-of-type {
+  background: linear-gradient(135deg, #0ea5e9, #22c55e);
+  color: white;
+  box-shadow: 0 6px 20px rgba(34,197,94,0.3);
+}
+
+button:last-of-type {
+  background: rgba(255,255,255,0.1);
+  color: white;
 }
 
 button:hover {
-  opacity: 0.85;
+  transform: translateY(-2px);
+  opacity: 0.95;
 }
 
-.loading {
+/* =======================
+   ERROR
+======================= */
+#formMessage {
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+/* =======================
+   TRIP CARD
+======================= */
+#tripCard {
+  width: 100%;
+}
+
+/* HERO IMAGE */
+#tripHero {
+  width: 100%;
+  height: 240px;
+  border-radius: 16px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* TITLE */
+#tripTitle {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+#tripSubtitle {
+  opacity: 0.7;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+/* META */
+#tripRoute,
+#tripDates,
+#tripNights {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+/* =======================
+   SNAPSHOT GRID
+======================= */
+#snapshotGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0;
+}
+
+#snapshotGrid div {
+  background: rgba(255,255,255,0.06);
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* =======================
+   LINKS
+======================= */
+#flightLink,
+#hotelLink,
+#mapsLink {
+  display: inline-block;
+  margin-right: 12px;
+  margin-top: 8px;
+  color: #38bdf8;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+#flightLink:hover,
+#hotelLink:hover,
+#mapsLink:hover {
+  text-decoration: underline;
+}
+
+/* =======================
+   ITINERARY
+======================= */
+#itineraryDays {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+#itineraryDays div {
+  background: rgba(255,255,255,0.05);
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+/* =======================
+   SIDE CONTENT
+======================= */
+#destinationBlurb {
+  margin-top: 16px;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+#highlightList {
+  margin-top: 10px;
+  padding-left: 18px;
+}
+
+#highlightList li {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+/* =======================
+   EMPTY STATE
+======================= */
+#emptyState {
   opacity: 0.6;
-  pointer-events: none;
+  font-size: 20px;
+}
+
+/* =======================
+   LOADING FEEL
+======================= */
+body.loading {
+  cursor: progress;
+  opacity: 0.95;
 }
