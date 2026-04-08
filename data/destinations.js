@@ -368,3 +368,4 @@ const DESTINATIONS = [
     ]
   }
 ];
+window.DESTINATIONS = DESTINATIONS;
