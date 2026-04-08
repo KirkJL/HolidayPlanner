@@ -1,32 +1,41 @@
 const DESTINATIONS = [
   {
-    name: "Santorini",
-    country: "Greece",
-    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    airport: "JTR",
-    lat: 36.3932,
-    lon: 25.4615,
-    baseFlight: 120,
-    baseHotel: 90
-  },
-  {
-    name: "Reykjavik",
+    id: "reykjavik-iceland",
+    name: "Reykjavík",
     country: "Iceland",
-    image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-    airport: "KEF",
+    airportCode: "KEF",
+    airportName: "Keflavík International Airport",
     lat: 64.1466,
     lon: -21.9426,
-    baseFlight: 180,
-    baseHotel: 130
+    vibeTags: ["nature", "cold", "romantic"],
+    climateTag: "cold",
+    styleTags: ["adventure", "photography", "balanced"],
+    currency: "ISK",
+    timezone: "GMT",
+    bookingQuery: "Reykjavik",
+    mapQuery: "Reykjavik Iceland",
+    image:
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80",
+    blurb:
+      "Glacier air, black-sand drama, geothermal pools, and that slightly surreal feeling that the whole place was designed as a wallpaper first and a city second.",
+    highlights: [
+      "Blue Lagoon and geothermal spa culture",
+      "Golden Circle day trips",
+      "Northern skies and dramatic coastal light"
+    ]
   },
   {
-    name: "Tokyo",
-    country: "Japan",
-    image: "https://images.unsplash.com/photo-1505069446780-4ef442b5207f",
-    airport: "HND",
-    lat: 35.6762,
-    lon: 139.6503,
-    baseFlight: 450,
-    baseHotel: 110
-  }
-];
+    id: "santorini-greece",
+    name: "Santorini",
+    country: "Greece",
+    airportCode: "JTR",
+    airportName: "Santorini Airport",
+    lat: 36.3932,
+    lon: 25.4615,
+    vibeTags: ["coastal", "warm", "romantic"],
+    climateTag: "warm",
+    styleTags: ["relaxed", "photography", "balanced"],
+    currency: "EUR",
+    timezone: "EET",
+    bookingQuery: "Santorini",
+    mapQuery: "Santorini Greece
