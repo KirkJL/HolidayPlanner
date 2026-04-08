@@ -1,59 +1,331 @@
+/* =========================
+   RESET
+========================= */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
 body {
-  margin:0;
-  font-family: system-ui;
-  background:#05080f;
-  color:white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: radial-gradient(circle at 20% 10%, #0a1a2f, #02060d 60%);
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* =========================
+   HEADER (FULL BLEED)
+========================= */
+.site-header {
+  position: relative;
+  height: 360px;
+  padding: 24px 16px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
 }
 
 .header-bg {
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  opacity:0.2;
-  transition:opacity 0.6s ease;
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.05);
+  transition: opacity 0.6s ease;
+  opacity: 0.25;
 }
 
-.site-header {
-  position:relative;
-  height:320px;
-  display:flex;
-  align-items:flex-end;
-  padding:40px;
+.header-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.2),
+    rgba(0,0,0,0.8)
+  );
 }
 
-.brand-wrap h1 {
-  font-size:42px;
+.brand-wrap {
+  position: relative;
+  z-index: 2;
 }
 
+.brand-pill {
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.site-header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.hero-copy {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+/* =========================
+   LAYOUT (MOBILE FIRST)
+========================= */
 .app-grid {
-  display:grid;
-  grid-template-columns:320px 1fr;
-  gap:20px;
-  padding:20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
 }
 
+/* =========================
+   CARDS
+========================= */
 .glass-card {
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(12px);
-  border-radius:16px;
-  padding:16px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 16px;
 }
 
+/* =========================
+   FORM
+========================= */
+.field-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: white;
+  font-size: 14px;
+}
+
+input:focus, select:focus {
+  outline: none;
+  background: rgba(255,255,255,0.1);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0ea5e9, #22c55e);
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.08);
+}
+
+/* =========================
+   TRIP CARD
+========================= */
+.trip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* HERO */
 .trip-hero {
-  height:260px;
-  background-size:cover;
-  border-radius:12px;
-  margin-bottom:12px;
+  height: 220px;
+  border-radius: 14px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  position: relative;
 }
 
-button {
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.2),
+    rgba(0,0,0,0.85)
+  );
 }
 
-.is-hidden {
-  display:none;
+.hero-content {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+}
+
+#tripTitle {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+#tripSubtitle {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* =========================
+   META
+========================= */
+.trip-quick-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* =========================
+   SNAPSHOT
+========================= */
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.snapshot-grid div {
+  background: rgba(255,255,255,0.05);
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* =========================
+   LINKS
+========================= */
+.booking-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.booking-card {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  text-decoration: none;
+  color: white;
+}
+
+/* =========================
+   ITINERARY
+========================= */
+.itinerary-days {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.itinerary-days div {
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  font-size: 13px;
+}
+
+/* =========================
+   SIDE PANELS
+========================= */
+.trip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trip-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.side-panel {
+  background: rgba(255,255,255,0.04);
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.side-copy {
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+/* =========================
+   HIGHLIGHTS
+========================= */
+.highlight-list {
+  padding-left: 16px;
+}
+
+.highlight-list li {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty-state {
+  text-align: center;
+  opacity: 0.6;
+  font-size: 16px;
+}
+
+/* =========================
+   DESKTOP ENHANCEMENT
+========================= */
+@media (min-width: 1024px) {
+  .app-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+  }
+
+  .trip-body {
+    flex-direction: row;
+    gap: 24px;
+  }
+
+  .trip-main {
+    flex: 2;
+  }
+
+  .trip-side {
+    flex: 1;
+  }
+
+  .trip-hero {
+    height: 320px;
+  }
+
+  #tripTitle {
+    font-size: 32px;
+  }
 }
