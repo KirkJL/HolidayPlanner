@@ -1,176 +1,326 @@
+// =======================
+// DOM
+// =======================
 const form = document.getElementById("tripForm");
-const generateBtn = document.getElementById("generateBtn");
+const formMessage = document.getElementById("formMessage");
+
+const emptyState = document.getElementById("emptyState");
+const tripCard = document.getElementById("tripCard");
+
+const tripHero = document.getElementById("tripHero");
+const tripTitle = document.getElementById("tripTitle");
+const tripSubtitle = document.getElementById("tripSubtitle");
+
+const tripRoute = document.getElementById("tripRoute");
+const tripDates = document.getElementById("tripDates");
+const tripNights = document.getElementById("tripNights");
+
+const tripVibeBadge = document.getElementById("tripVibeBadge");
+const tripWeatherBadge = document.getElementById("tripWeatherBadge");
+
+const snapshotGrid = document.getElementById("snapshotGrid");
+
+const flightLink = document.getElementById("flightLink");
+const hotelLink = document.getElementById("hotelLink");
+const mapsLink = document.getElementById("mapsLink");
+
+const itineraryIntro = document.getElementById("itineraryIntro");
+const itineraryDays = document.getElementById("itineraryDays");
+
+const weatherTemp = document.getElementById("weatherTemp");
+const weatherDesc = document.getElementById("weatherDesc");
+const weatherMeta = document.getElementById("weatherMeta");
+
+const packingNote = document.getElementById("packingNote");
+const destinationBlurb = document.getElementById("destinationBlurb");
+const highlightList = document.getElementById("highlightList");
+
+const exportPngBtn = document.getElementById("exportPngBtn");
+const exportPdfBtn = document.getElementById("exportPdfBtn");
+
 const rerollBtn = document.getElementById("rerollBtn");
+const generateBtn = document.getElementById("generateBtn");
 
+const headerBg = document.getElementById("headerBg");
+
+// =======================
+// STATE
+// =======================
 let currentDestinationId = null;
+let isGenerating = false;
 
-// PREVENT FORM SUBMIT BUG
-form.addEventListener("submit", (e) => e.preventDefault());
+// =======================
+// INIT
+// =======================
+setDefaultDates();
+bindEvents();
 
-generateBtn.addEventListener("click", () => generateTrip(false));
-rerollBtn.addEventListener("click", () => generateTrip(true));
+// =======================
+// EVENTS
+// =======================
+function bindEvents() {
+  // HARD FIX: prevent form reload forever
+  if (form) {
+    form.addEventListener("submit", (e) => e.preventDefault());
+  }
 
+  generateBtn?.addEventListener("click", () => generateTrip(false));
+  rerollBtn?.addEventListener("click", () => generateTrip(true));
+
+  exportPngBtn?.addEventListener("click", exportTripAsPng);
+  exportPdfBtn?.addEventListener("click", exportTripAsPdf);
+}
+
+// =======================
+// GENERATION
+// =======================
 async function generateTrip(forceReroll) {
-  try {
-    setLoading(true);
+  if (isGenerating) return;
 
-    const from = sanitizeAirportCode(getVal("from"));
-    const depart = getVal("departDate");
-    const returnDate = getVal("returnDate");
+  try {
+    isGenerating = true;
+    setLoadingState(true);
+    setMessage("Rolling destinations…", false);
+
+    const from = sanitizeAirportCode(document.getElementById("from")?.value);
+    const depart = document.getElementById("departDate")?.value;
+    const returnDate = document.getElementById("returnDate")?.value;
+    const vibe = document.getElementById("vibe")?.value || "all";
+    const style = document.getElementById("style")?.value || "balanced";
+    const travellers = document.getElementById("travellers")?.value || "2";
 
     if (!from || !depart || !returnDate) {
-      setMessage("Missing required fields", true);
-      setLoading(false);
+      setMessage("Missing required fields.", true);
       return;
     }
 
-    const dest = pickDestination(forceReroll);
+    const nights = daysBetween(depart, returnDate);
+    if (nights < 1) {
+      setMessage("Invalid date range.", true);
+      return;
+    }
+
+    const dest = safePickDestination(vibe, forceReroll);
 
     if (!dest) {
-      setMessage("No destination found", true);
-      setLoading(false);
+      setMessage("No valid destination found.", true);
       return;
     }
 
     currentDestinationId = dest.id;
 
-    updateHeader(dest.image);
+    await animateHeaderSwap(dest.image);
 
-    const weather = await fetchWeatherSafe(dest);
+    const weather = await fetchWeather(dest.lat, dest.lon);
 
-    render(dest, from, depart, returnDate, weather);
+    renderTrip({
+      from,
+      depart,
+      returnDate,
+      travellers,
+      nights,
+      style,
+      vibe,
+      dest,
+      weather
+    });
 
-    setMessage("");
-    setLoading(false);
+    setMessage("", false);
 
   } catch (e) {
     console.error(e);
-    setMessage("Crash prevented. Check console.", true);
-    setLoading(false);
+    setMessage("Recovered from error. Try again.", true);
+  } finally {
+    setLoadingState(false);
+    isGenerating = false;
   }
 }
 
+// =======================
 // SAFE DESTINATION PICK
-function pickDestination(force) {
-  const pool = window.DESTINATIONS || [];
+// =======================
+function safePickDestination(vibe, forceReroll) {
+  const all = Array.isArray(window.DESTINATIONS) ? window.DESTINATIONS : [];
 
-  const valid = pool.filter(d =>
-    d && d.id && d.name && d.image && d.airportCode
+  const valid = all.filter(d =>
+    d &&
+    d.id &&
+    d.name &&
+    d.image &&
+    d.airportCode &&
+    d.lat &&
+    d.lon
   );
 
   if (!valid.length) return null;
 
-  const filtered = force
-    ? valid.filter(d => d.id !== currentDestinationId)
-    : valid;
+  let pool = (vibe === "all")
+    ? valid
+    : valid.filter(d => Array.isArray(d.vibeTags) && d.vibeTags.includes(vibe));
 
-  return filtered[Math.floor(Math.random() * filtered.length)];
+  if (!pool.length) pool = valid;
+
+  if (forceReroll && currentDestinationId) {
+    const rerollPool = pool.filter(d => d.id !== currentDestinationId);
+    if (rerollPool.length) pool = rerollPool;
+  }
+
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
-// SAFE WEATHER
-async function fetchWeatherSafe(dest) {
+// =======================
+// RENDER (SAFE)
+// =======================
+function renderTrip(data) {
+  const { from, depart, returnDate, travellers, nights, style, vibe, dest, weather } = data;
+
+  emptyState?.classList.add("is-hidden");
+  tripCard?.classList.remove("is-hidden");
+
+  // HERO
+  if (tripHero && dest.image) {
+    tripHero.style.backgroundImage = `
+      linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.7)),
+      url("${dest.image}")
+    `;
+  }
+
+  // TEXT SAFE
+  setText(tripTitle, dest.name);
+  setText(tripSubtitle, `${dest.country || ""} · ${dest.airportName || ""}`);
+
+  setText(tripRoute, `${from} → ${dest.airportCode}`);
+  setText(tripDates, `${formatDisplayDate(depart)} — ${formatDisplayDate(returnDate)}`);
+  setText(tripNights, `${nights} nights`);
+
+  setText(tripVibeBadge, humaniseVibe(vibe, dest));
+  setText(tripWeatherBadge, weather?.current_weather
+    ? `${weather.current_weather.temperature}°C`
+    : "Weather unavailable"
+  );
+
+  // LINKS SAFE
+  flightLink && (flightLink.href = buildSkyscannerLink(from, dest.airportCode, depart, returnDate, travellers));
+  hotelLink && (hotelLink.href = buildBookingLink(dest.bookingQuery || dest.name, depart, returnDate, travellers));
+  mapsLink && (mapsLink.href = buildMapsLink(dest.mapQuery || dest.name));
+
+  // SNAPSHOT SAFE
+  snapshotGrid && (snapshotGrid.innerHTML = `
+    <div>${travellers} travellers</div>
+    <div>${dest.currency || "-"}</div>
+    <div>${dest.timezone || "-"}</div>
+  `);
+
+  // ITINERARY SAFE
+  if (itineraryDays) {
+    itineraryDays.innerHTML = "";
+    (dest.highlights || []).forEach((h, i) => {
+      const el = document.createElement("div");
+      el.textContent = `Day ${i + 1}: ${h}`;
+      itineraryDays.appendChild(el);
+    });
+  }
+
+  // SIDE SAFE
+  setText(destinationBlurb, dest.blurb);
+  if (highlightList && Array.isArray(dest.highlights)) {
+    highlightList.innerHTML = dest.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("");
+  }
+}
+
+// =======================
+// UI FEEL (CINEMATIC)
+// =======================
+async function animateHeaderSwap(image) {
+  if (!headerBg || !image) return;
+
+  headerBg.style.opacity = "0";
+
+  await new Promise(r => setTimeout(r, 200));
+
+  headerBg.style.backgroundImage = `url("${image}")`;
+  headerBg.style.opacity = "0.35";
+}
+
+function setLoadingState(state) {
+  document.body.classList.toggle("loading", state);
+}
+
+// =======================
+// WEATHER
+// =======================
+async function fetchWeather(lat, lon) {
   try {
-    if (!dest.lat || !dest.lon) return null;
-
     const res = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${dest.lat}&longitude=${dest.lon}&current_weather=true`
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
     );
-
     return await res.json();
   } catch {
     return null;
   }
 }
 
-// RENDER SAFE
-function render(dest, from, depart, returnDate, weather) {
-  show("tripCard");
-  hide("emptyState");
-
-  const hero = document.getElementById("tripHero");
-
-  hero.style.backgroundImage = `url("${safe(dest.image)}")`;
-
-  setText("tripTitle", safe(dest.name));
-  setText("tripSubtitle", `${safe(dest.country)} · ${safe(dest.airportName)}`);
-
-  setLink("flightLink",
-    `https://www.skyscanner.net/transport/flights/${from.toLowerCase()}/${dest.airportCode.toLowerCase()}/${format(depart)}/${format(returnDate)}/`
-  );
-
-  setLink("hotelLink",
-    `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(dest.bookingQuery)}`
-  );
-
-  setLink("mapsLink",
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dest.mapQuery)}`
-  );
-
-  renderItinerary(dest);
-}
-
-// SIMPLE ITINERARY SAFE
-function renderItinerary(dest) {
-  const container = document.getElementById("itineraryDays");
-  container.innerHTML = "";
-
-  (dest.highlights || []).forEach((h, i) => {
-    const div = document.createElement("div");
-    div.textContent = `Day ${i + 1}: ${h}`;
-    container.appendChild(div);
-  });
-}
-
-// =================
+// =======================
 // HELPERS
-// =================
-function setText(id, val) {
-  const el = document.getElementById(id);
+// =======================
+function setText(el, val) {
   if (el) el.textContent = val || "—";
 }
 
-function setLink(id, url) {
-  const el = document.getElementById(id);
-  if (el) el.href = url;
-}
-
-function getVal(id) {
-  return document.getElementById(id)?.value || "";
-}
-
-function safe(v) {
-  return v || "";
+function setMessage(msg, err) {
+  if (!formMessage) return;
+  formMessage.textContent = msg;
+  formMessage.style.color = err ? "#fda4af" : "#9cb2cc";
 }
 
 function sanitizeAirportCode(v) {
-  return String(v).toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
+  return String(v || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
 }
 
-function format(d) {
-  return d.replace(/-/g, "").slice(2);
+function daysBetween(a, b) {
+  return Math.max(1, Math.round((new Date(b) - new Date(a)) / 86400000));
 }
 
-function setMessage(msg, err) {
-  const el = document.getElementById("formMessage");
-  if (!el) return;
-  el.textContent = msg;
-  el.style.color = err ? "red" : "#9cb2cc";
+function formatDisplayDate(d) {
+  return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
-function show(id) {
-  document.getElementById(id)?.classList.remove("is-hidden");
+function buildSkyscannerLink(from, to, d, r, t) {
+  return `https://www.skyscanner.net/transport/flights/${from.toLowerCase()}/${to.toLowerCase()}/${d}/${r}/`;
 }
 
-function hide(id) {
-  document.getElementById(id)?.classList.add("is-hidden");
+function buildBookingLink(q) {
+  return `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(q)}`;
 }
 
-function updateHeader(img) {
-  const el = document.getElementById("headerBg");
-  if (!el) return;
-  el.style.backgroundImage = `url("${img}")`;
+function buildMapsLink(q) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
 }
 
-function setLoading(state) {
-  document.body.classList.toggle("loading", state);
+function humaniseVibe(v, dest) {
+  if (v === "all") return dest.vibeTags?.[0] || "Discover";
+  return v;
+}
+
+function setDefaultDates() {
+  const today = new Date();
+  document.getElementById("departDate").value = toISO(addDays(today, 21));
+  document.getElementById("returnDate").value = toISO(addDays(today, 25));
+}
+
+function addDays(d, n) {
+  const x = new Date(d);
+  x.setDate(x.getDate() + n);
+  return x;
+}
+
+function toISO(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+function escapeHtml(v) {
+  return String(v || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
