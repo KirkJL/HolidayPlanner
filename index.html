@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Holiday Planner</title>
+
+  <!-- SECURITY: Strict CSP -->
+  <meta http-equiv="Content-Security-Policy"
+    content="
+      default-src 'self';
+      img-src 'self' https:;
+      script-src 'self' https://cdnjs.cloudflare.com;
+      style-src 'self' 'unsafe-inline';
+      connect-src 'self' https://YOUR-WORKER.workers.dev;
+    ">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <h1>🌍 Pick My Next Holiday</h1>
+
+  <div class="controls">
+    <input id="from" placeholder="Departure Airport (e.g. LON)">
+    <input id="dates" placeholder="Dates (e.g. 12–16 May)">
+
+    <select id="budget">
+      <option value="low">Budget</option>
+      <option value="mid" selected>Mid</option>
+      <option value="high">Luxury</option>
+    </select>
+
+    <button id="generate">🎲 Generate Trip</button>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="export">
+    <button id="exportPNG">Export PNG</button>
+    <button id="exportPDF">Export PDF</button>
+  </div>
+
+</div>
+
+<!-- LIBRARIES -->
+<script src="data/destinations.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- MAIN -->
+<script src="app.js"></script>
+
+</body>
+</html>
