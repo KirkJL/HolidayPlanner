@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+  <title>Wallpaper Holiday Planner</title>
+  <meta
+    name="description"
+    content="Pick a random wallpaper-inspired destination and generate a cinematic travel itinerary with live flight, hotel, weather, and map links."
+  />
+
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="
+      default-src 'self';
+      base-uri 'self';
+      object-src 'none';
+      frame-ancestors 'none';
+      script-src 'self' https://cdnjs.cloudflare.com;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' https: data:;
+      connect-src 'self' https://api.open-meteo.com;
+      font-src 'self';
+      media-src 'none';
+      form-action 'self';
+      upgrade-insecure-requests;
+    "
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div id="headerBg" class="header-bg"></div>
+      <div class="header-scrim"></div>
+
+      <div class="brand-wrap">
+        <div class="brand-pill">Wallpaper → Holiday</div>
+        <h1>See a place. Feel the pull. Build the trip.</h1>
+        <p class="hero-copy">
+          For those moments when a wallpaper hits harder than your actual plans.
+        </p>
+      </div>
+    </header>
+
+    <main class="app-grid">
+      <section class="control-panel glass-card">
+        <form id="tripForm" novalidate>
+          <input id="from" placeholder="LON" required />
+          <input id="departDate" type="date" required />
+          <input id="returnDate" type="date" required />
+          <button id="generateBtn" type="submit">Pick my holiday</button>
+          <button id="rerollBtn" type="button">Reroll</button>
+        </form>
+        <p id="formMessage"></p>
+      </section>
+
+      <section class="result-panel">
+        <div id="emptyState">Your next trip appears here</div>
+
+        <article id="tripCard" class="is-hidden">
+          <div id="tripHero"></div>
+          <h2 id="tripTitle"></h2>
+          <p id="tripSubtitle"></p>
+          <div id="tripRoute"></div>
+          <div id="tripDates"></div>
+          <div id="tripNights"></div>
+
+          <div id="snapshotGrid"></div>
+
+          <a id="flightLink" target="_blank">Flights</a>
+          <a id="hotelLink" target="_blank">Hotels</a>
+          <a id="mapsLink" target="_blank">Map</a>
+
+          <div id="itineraryDays"></div>
+
+          <p id="destinationBlurb"></p>
+          <ul id="highlightList"></ul>
+
+          <button id="exportPngBtn">Export PNG</button>
+          <button id="exportPdfBtn">Print</button>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="data/destinations.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
