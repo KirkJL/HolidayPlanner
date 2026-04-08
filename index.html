@@ -2,10 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
   <title>Wallpaper Holiday Planner</title>
+  <meta
+    name="description"
+    content="Pick a random wallpaper-inspired destination and generate a cinematic travel itinerary with live flight, hotel, weather, and map links."
+  />
 
-  <meta http-equiv="Content-Security-Policy"
+  <meta
+    http-equiv="Content-Security-Policy"
     content="
       default-src 'self';
       base-uri 'self';
@@ -18,95 +26,300 @@
       font-src 'self';
       media-src 'none';
       form-action 'self';
-    " />
+      upgrade-insecure-requests;
+    "
+  />
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div id="headerBg" class="header-bg" aria-hidden="true"></div>
+      <div class="header-scrim" aria-hidden="true"></div>
 
-<div class="page-shell">
-
-  <header class="site-header">
-    <div id="headerBg" class="header-bg"></div>
-
-    <div class="brand-wrap">
-      <div class="brand-pill">Discovery Engine</div>
-      <h1>Roll the world.</h1>
-      <p class="hero-copy">
-        One click. One destination. Real links. Real plan.
-      </p>
-    </div>
-  </header>
-
-  <main class="app-grid">
-
-    <section class="control-panel glass-card">
-      <form id="tripForm">
-
-        <div class="field-grid">
-          <input id="from" placeholder="LHR" />
-          <input id="departDate" type="date" />
-          <input id="returnDate" type="date" />
-          <select id="travellers">
-            <option value="1">1</option>
-            <option value="2" selected>2</option>
-          </select>
-          <select id="vibe">
-            <option value="all">Any</option>
-            <option value="coastal">Coastal</option>
-            <option value="city">City</option>
-            <option value="nature">Nature</option>
-          </select>
-          <select id="style">
-            <option value="balanced">Balanced</option>
-            <option value="adventure">Adventure</option>
-            <option value="relaxed">Relaxed</option>
-          </select>
-        </div>
-
-        <div class="action-row">
-          <button id="generateBtn" type="button">🎲 Generate Trip</button>
-          <button id="rerollBtn" type="button">Reroll</button>
-        </div>
-
-        <p id="formMessage"></p>
-
-      </form>
-    </section>
-
-    <section class="result-panel">
-
-      <div id="emptyState" class="empty-state">
-        <h2>No trip yet</h2>
+      <div class="brand-wrap">
+        <div class="brand-pill">Wallpaper → Holiday</div>
+        <h1>See a place. Feel the pull. Build the trip.</h1>
+        <p class="hero-copy">
+          For those moments when a wallpaper hits harder than your actual plans.
+          Pick a destination, get the mood, the route, the weather, and the links
+          to actually go.
+        </p>
       </div>
 
-      <div id="tripCard" class="trip-card is-hidden">
+      <div class="hero-orb hero-orb-a" aria-hidden="true"></div>
+      <div class="hero-orb hero-orb-b" aria-hidden="true"></div>
+    </header>
 
-        <div id="tripHero" class="trip-hero">
-          <div class="hero-content">
-            <h2 id="tripTitle"></h2>
-            <p id="tripSubtitle"></p>
+    <main class="app-grid">
+      <section class="control-panel glass-card">
+        <div class="panel-head">
+          <h2>Trip setup</h2>
+          <p>Choose your route, your vibe, then let the destination do the convincing.</p>
+        </div>
+
+        <form id="tripForm" novalidate>
+          <div class="field-grid">
+            <label class="field field-wide">
+              <span>From airport / city code</span>
+              <input
+                id="from"
+                name="from"
+                type="text"
+                inputmode="text"
+                maxlength="4"
+                placeholder="LON or LHR"
+                autocomplete="off"
+                required
+              />
+            </label>
+
+            <label class="field">
+              <span>Departure date</span>
+              <input id="departDate" name="departDate" type="date" required />
+            </label>
+
+            <label class="field">
+              <span>Return date</span>
+              <input id="returnDate" name="returnDate" type="date" required />
+            </label>
+
+            <label class="field">
+              <span>Travellers</span>
+              <select id="travellers" name="travellers">
+                <option value="1">1 adult</option>
+                <option value="2" selected>2 adults</option>
+                <option value="3">3 adults</option>
+                <option value="4">4 adults</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Trip vibe</span>
+              <select id="vibe" name="vibe">
+                <option value="all" selected>Anything</option>
+                <option value="coastal">Coastal</option>
+                <option value="city">City</option>
+                <option value="nature">Nature</option>
+                <option value="warm">Warm</option>
+                <option value="cold">Cold</option>
+                <option value="romantic">Romantic</option>
+              </select>
+            </label>
+
+            <label class="field field-wide">
+              <span>Trip style</span>
+              <select id="style" name="style">
+                <option value="balanced" selected>Balanced</option>
+                <option value="relaxed">Relaxed</option>
+                <option value="adventure">Adventure</option>
+                <option value="citybreak">City break</option>
+                <option value="photography">Photography</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="action-row">
+            <button id="generateBtn" class="btn btn-primary" type="submit">
+              Pick my holiday
+            </button>
+            <button id="rerollBtn" class="btn btn-secondary" type="button">
+              Reroll destination
+            </button>
+          </div>
+
+          <p id="formMessage" class="form-message" aria-live="polite"></p>
+        </form>
+
+        <div class="panel-foot">
+          <div class="mini-stat">
+            <span class="mini-stat-label">Mode</span>
+            <strong>Wallpaper discovery</strong>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-label">Data</span>
+            <strong>Live weather + live search links</strong>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat-label">Export</span>
+            <strong>PNG + printable PDF</strong>
           </div>
         </div>
+      </section>
 
-        <div class="trip-body">
-          <div id="snapshotGrid"></div>
-          <a id="flightLink" target="_blank">Flights</a>
-          <a id="hotelLink" target="_blank">Hotels</a>
-          <a id="mapsLink" target="_blank">Map</a>
-          <div id="itineraryDays"></div>
+      <section class="result-panel">
+        <div id="emptyState" class="empty-state glass-card">
+          <div class="empty-icon">✈️</div>
+          <h2>Your next “yeah… I’d go there” moment lands here</h2>
+          <p>
+            Pick your dates, set the vibe if you want one, then let the app throw
+            you somewhere worth staring at.
+          </p>
         </div>
 
-      </div>
+        <article id="tripCard" class="trip-card glass-card is-hidden" aria-live="polite">
+          <div id="tripHero" class="trip-hero">
+            <div class="hero-overlay"></div>
 
-    </section>
+            <div class="hero-content">
+              <div class="hero-topline">
+                <span id="tripVibeBadge" class="badge">Wallpaper pick</span>
+                <span id="tripWeatherBadge" class="badge badge-soft">Loading weather…</span>
+              </div>
 
-  </main>
+              <div class="hero-copy-wrap">
+                <h2 id="tripTitle">Destination</h2>
+                <p id="tripSubtitle">Country · Airport</p>
+              </div>
 
-</div>
+              <div class="trip-quick-meta">
+                <div class="quick-meta-item">
+                  <span class="quick-meta-label">Route</span>
+                  <strong id="tripRoute">—</strong>
+                </div>
+                <div class="quick-meta-item">
+                  <span class="quick-meta-label">Dates</span>
+                  <strong id="tripDates">—</strong>
+                </div>
+                <div class="quick-meta-item">
+                  <span class="quick-meta-label">Nights</span>
+                  <strong id="tripNights">—</strong>
+                </div>
+              </div>
+            </div>
+          </div>
 
-<script src="data/destinations.js"></script>
-<script src="app.js"></script>
+          <div class="trip-body">
+            <div class="trip-main">
+              <section class="content-block">
+                <div class="block-head">
+                  <h3>Trip snapshot</h3>
+                </div>
+                <div class="snapshot-grid" id="snapshotGrid"></div>
+              </section>
 
+              <section class="content-block">
+                <div class="block-head">
+                  <h3>Live booking links</h3>
+                  <p>These open real live searches. No made-up totals, no fake pricing.</p>
+                </div>
+
+                <div class="booking-grid">
+                  <a
+                    id="flightLink"
+                    class="booking-card booking-flight"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span class="booking-kicker">Flights</span>
+                    <strong>Open live fares</strong>
+                    <small>Skyscanner search</small>
+                  </a>
+
+                  <a
+                    id="hotelLink"
+                    class="booking-card booking-stay"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span class="booking-kicker">Stays</span>
+                    <strong>Open live accommodation</strong>
+                    <small>Booking.com search</small>
+                  </a>
+
+                  <a
+                    id="mapsLink"
+                    class="booking-card booking-map"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span class="booking-kicker">Explore</span>
+                    <strong>Open destination map</strong>
+                    <small>Google Maps</small>
+                  </a>
+                </div>
+              </section>
+
+              <section class="content-block">
+                <div class="block-head">
+                  <h3>Suggested itinerary</h3>
+                  <p id="itineraryIntro">Built around the destination, not just a checklist.</p>
+                </div>
+
+                <div id="itineraryDays" class="itinerary-days"></div>
+              </section>
+
+              <section class="content-block export-block">
+                <div class="block-head">
+                  <h3>Take it with you</h3>
+                  <p>Save the reveal as an image or print it cleanly as a PDF.</p>
+                </div>
+
+                <div class="action-row export-row">
+                  <button id="exportPngBtn" class="btn btn-secondary btn-full" type="button">
+                    Export PNG
+                  </button>
+                  <button id="exportPdfBtn" class="btn btn-secondary btn-full" type="button">
+                    Print / PDF
+                  </button>
+                </div>
+              </section>
+            </div>
+
+            <aside class="trip-side">
+              <section class="side-panel">
+                <div class="block-head">
+                  <h3>Live conditions</h3>
+                </div>
+
+                <div class="weather-panel">
+                  <div class="weather-topline">
+                    <div id="weatherTemp" class="weather-temp">—</div>
+                    <div id="weatherDesc" class="weather-desc">Waiting on live weather.</div>
+                  </div>
+
+                  <div id="weatherMeta" class="weather-meta">
+                    <div class="weather-meta-item"><span>Wind</span><strong>—</strong></div>
+                    <div class="weather-meta-item"><span>Direction</span><strong>—</strong></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="side-panel">
+                <div class="block-head">
+                  <h3>Why this place hits</h3>
+                </div>
+                <p id="destinationBlurb" class="side-copy">—</p>
+              </section>
+
+              <section class="side-panel">
+                <div class="block-head">
+                  <h3>Highlights</h3>
+                </div>
+                <ul id="highlightList" class="highlight-list"></ul>
+              </section>
+
+              <section class="side-panel">
+                <div class="block-head">
+                  <h3>Packing note</h3>
+                </div>
+                <p id="packingNote" class="side-copy">—</p>
+              </section>
+            </aside>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+    integrity="sha512-BNa5pJmvh2C6jWmPWqsK0R12gWowL6N53BJ38qRAjPR9UCeFVLtZLgmNVr7Di5urN6byN1NsZM3Rp3crIan2nA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
+  <script src="data/destinations.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
