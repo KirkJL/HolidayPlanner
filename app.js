@@ -1,108 +1,209 @@
-const WORKER_URL = "holidays.kirkjlemon.workers.dev";
+// =======================
+// CONFIG
+// =======================
+const form = document.getElementById("tripForm");
+const formMessage = document.getElementById("formMessage");
 
-const btn = document.getElementById("generate");
-const result = document.getElementById("result");
+// RESULT ELEMENTS
+const emptyState = document.getElementById("emptyState");
+const tripCard = document.getElementById("tripCard");
 
-btn.onclick = async () => {
+const tripHero = document.getElementById("tripHero");
+const tripTitle = document.getElementById("tripTitle");
+const tripSubtitle = document.getElementById("tripSubtitle");
 
-  const from = document.getElementById("from").value || "LON";
-  const dates = document.getElementById("dates").value || "Flexible";
-  const budget = document.getElementById("budget").value;
+const tripRoute = document.getElementById("tripRoute");
+const tripDates = document.getElementById("tripDates");
+const tripNights = document.getElementById("tripNights");
 
-  const dest = DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
+const tripWeatherBadge = document.getElementById("tripWeatherBadge");
 
-  // WEATHER FETCH
-  let weatherText = "Unavailable";
-  try {
-    const res = await fetch(`${WORKER_URL}/weather?lat=${dest.lat}&lon=${dest.lon}`);
-    const data = await res.json();
+const snapshotGrid = document.getElementById("snapshotGrid");
 
-    weatherText = `${data.temperature}°C, wind ${data.windspeed} km/h`;
-  } catch (err) {
-    console.error("Weather failed", err);
+const flightLink = document.getElementById("flightLink");
+const hotelLink = document.getElementById("hotelLink");
+const mapsLink = document.getElementById("mapsLink");
+
+const itineraryDays = document.getElementById("itineraryDays");
+
+const weatherTemp = document.getElementById("weatherTemp");
+const weatherDesc = document.getElementById("weatherDesc");
+const weatherMeta = document.getElementById("weatherMeta");
+
+const packingNote = document.getElementById("packingNote");
+const destinationBlurb = document.getElementById("destinationBlurb");
+const highlightList = document.getElementById("highlightList");
+
+// =======================
+// HELPERS
+// =======================
+function randomDestination(vibe) {
+  if (!vibe || vibe === "all") {
+    return DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
   }
 
-  // COST ENGINE
-  const multiplier = {
-    low: 0.8,
-    mid: 1,
-    high: 1.5
-  }[budget];
+  const filtered = DESTINATIONS.filter(d => d.vibeTags.includes(vibe));
 
-  const nights = 4;
+  if (filtered.length === 0) return DESTINATIONS[0];
 
-  const flightCost = Math.round(dest.baseFlight * multiplier);
-  const hotelNight = Math.round(dest.baseHotel * multiplier);
-  const hotelTotal = hotelNight * nights;
-  const food = 50 * nights;
+  return filtered[Math.floor(Math.random() * filtered.length)];
+}
 
-  const total = flightCost + hotelTotal + food;
+function daysBetween(start, end) {
+  return Math.max(
+    1,
+    Math.round((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24))
+  );
+}
 
-  // SKYSCANNER LINK
-  const flightLink = `https://www.skyscanner.net/transport/flights/${from}/${dest.airport}/`;
+// =======================
+// FORM SUBMIT (FIXED)
+// =======================
+form.addEventListener("submit", async (e) => {
+  e.preventDefault(); // 🚨 THIS FIXES YOUR PAGE RESET
 
-  result.innerHTML = `
-    <div class="card" id="card">
+  formMessage.textContent = "Generating trip...";
 
-      <img class="hero" src="${dest.image}" />
+  const from = document.getElementById("from").value || "LON";
+  const depart = document.getElementById("departDate").value;
+  const returnDate = document.getElementById("returnDate").value;
+  const vibe = document.getElementById("vibe").value;
+  const travellers = document.getElementById("travellers").value;
 
-      <div class="content">
+  if (!depart || !returnDate) {
+    formMessage.textContent = "Please select dates.";
+    return;
+  }
 
-        <h2>${dest.name}, ${dest.country}</h2>
-        <p>${dates}</p>
+  const nights = daysBetween(depart, returnDate);
+  const dest = randomDestination(vibe);
 
-        <div class="section">🌤 Weather: ${weatherText}</div>
+  // =======================
+  // WEATHER (DIRECT)
+  // =======================
+  let weather = null;
 
-        <div class="section">
-          ✈️ Flights: ~£${flightCost}<br>
-          <a href="${flightLink}" target="_blank">Search Live Flights</a>
-        </div>
+  try {
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${dest.lat}&longitude=${dest.lon}&current_weather=true`
+    );
+    const data = await res.json();
+    weather = data.current_weather;
+  } catch {}
 
-        <div class="section">🏨 Hotel: £${hotelTotal} (${hotelNight}/night)</div>
-        <div class="section">🍔 Food: £${food}</div>
+  // =======================
+  // LINKS (FIXED)
+  // =======================
+  flightLink.href = `https://www.skyscanner.net/transport/flights/${from}/${dest.airportCode}/${depart}/`;
+  hotelLink.href = `https://www.booking.com/searchresults.html?ss=${dest.bookingQuery}`;
+  mapsLink.href = `https://www.google.com/maps/search/${dest.mapQuery}`;
 
-        <div class="section"><strong>Total: £${total}</strong></div>
+  // =======================
+  // HERO
+  // =======================
+  tripHero.style.backgroundImage = `url(${dest.image})`;
 
-        <div class="section">
-          📅 Itinerary:
-          <ul>
-            <li>Day 1 – Arrival & explore</li>
-            <li>Day 2 – Main sights</li>
-            <li>Day 3 – Activity / relax</li>
-            <li>Day 4 – Free day</li>
-            <li>Day 5 – Return</li>
-          </ul>
-        </div>
+  tripTitle.textContent = dest.name;
+  tripSubtitle.textContent = dest.country;
 
-      </div>
+  tripRoute.textContent = `${from} → ${dest.airportCode}`;
+  tripDates.textContent = `${depart} → ${returnDate}`;
+  tripNights.textContent = `${nights} nights`;
+
+  // =======================
+  // WEATHER UI
+  // =======================
+  if (weather) {
+    tripWeatherBadge.textContent = `${weather.temperature}°C`;
+    weatherTemp.textContent = `${weather.temperature}°C`;
+    weatherDesc.textContent = "Current conditions";
+
+    weatherMeta.innerHTML = `
+      <div class="weather-meta-item"><span>Wind</span><strong>${weather.windspeed} km/h</strong></div>
+      <div class="weather-meta-item"><span>Direction</span><strong>${weather.winddirection}°</strong></div>
+    `;
+  } else {
+    tripWeatherBadge.textContent = "Weather unavailable";
+  }
+
+  // =======================
+  // SNAPSHOT
+  // =======================
+  snapshotGrid.innerHTML = `
+    <div class="snapshot-item">
+      <span class="snapshot-label">Travellers</span>
+      <div class="snapshot-value">${travellers}</div>
+    </div>
+    <div class="snapshot-item">
+      <span class="snapshot-label">Timezone</span>
+      <div class="snapshot-value">${dest.timezone}</div>
+    </div>
+    <div class="snapshot-item">
+      <span class="snapshot-label">Currency</span>
+      <div class="snapshot-value">${dest.currency}</div>
+    </div>
+    <div class="snapshot-item">
+      <span class="snapshot-label">Style</span>
+      <div class="snapshot-value">${dest.styleTags.join(", ")}</div>
     </div>
   `;
-};
 
-// PNG EXPORT
-document.getElementById("exportPNG").onclick = async () => {
-  const card = document.getElementById("card");
-  if (!card) return alert("Generate a trip first");
+  // =======================
+  // ITINERARY
+  // =======================
+  itineraryDays.innerHTML = "";
 
-  const canvas = await html2canvas(card);
+  for (let i = 1; i <= nights; i++) {
+    const el = document.createElement("div");
+    el.className = "day-card";
+
+    el.innerHTML = `
+      <div class="day-card-head">
+        <h4>Day ${i}</h4>
+        <span class="day-badge">${dest.styleTags[0]}</span>
+      </div>
+      <p class="day-copy">
+        Explore ${dest.name}, focus on ${dest.vibeTags[0]} experiences.
+      </p>
+    `;
+
+    itineraryDays.appendChild(el);
+  }
+
+  // =======================
+  // SIDE CONTENT
+  // =======================
+  destinationBlurb.textContent = dest.blurb;
+
+  highlightList.innerHTML = dest.highlights
+    .map(h => `<li>${h}</li>`)
+    .join("");
+
+  packingNote.textContent =
+    dest.climateTag === "cold"
+      ? "Bring layers, waterproofs, and boots."
+      : "Light clothes, sun protection, and breathable footwear.";
+
+  // =======================
+  // SHOW RESULT
+  // =======================
+  emptyState.classList.add("is-hidden");
+  tripCard.classList.remove("is-hidden");
+
+  formMessage.textContent = "Trip ready.";
+});
+
+// =======================
+// EXPORT
+// =======================
+document.getElementById("exportPngBtn").onclick = async () => {
+  const canvas = await html2canvas(document.getElementById("tripCard"));
   const link = document.createElement("a");
-
   link.download = "trip.png";
   link.href = canvas.toDataURL();
   link.click();
 };
 
-// PDF EXPORT
-document.getElementById("exportPDF").onclick = async () => {
-  const card = document.getElementById("card");
-  if (!card) return alert("Generate a trip first");
-
-  const canvas = await html2canvas(card);
-  const img = canvas.toDataURL("image/png");
-
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-
-  pdf.addImage(img, "PNG", 10, 10, 180, 100);
-  pdf.save("trip.pdf");
+document.getElementById("exportPdfBtn").onclick = () => {
+  window.print();
 };
