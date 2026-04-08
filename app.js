@@ -1,4 +1,4 @@
-const WORKER_URL = "https://YOUR-WORKER.workers.dev";
+const WORKER_URL = "holidays.kirkjlemon.workers.dev";
 
 const btn = document.getElementById("generate");
 const result = document.getElementById("result");
