@@ -327,3 +327,6 @@ function escapeHtml(v) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 }
+// Initial state
+if (tripCard) tripCard.style.display = "none";
+if (emptyState) emptyState.style.display = "block";
