@@ -1,0 +1,59 @@
+body {
+  margin:0;
+  font-family: system-ui;
+  background:#05080f;
+  color:white;
+}
+
+.header-bg {
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  opacity:0.2;
+  transition:opacity 0.6s ease;
+}
+
+.site-header {
+  position:relative;
+  height:320px;
+  display:flex;
+  align-items:flex-end;
+  padding:40px;
+}
+
+.brand-wrap h1 {
+  font-size:42px;
+}
+
+.app-grid {
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:20px;
+  padding:20px;
+}
+
+.glass-card {
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(12px);
+  border-radius:16px;
+  padding:16px;
+}
+
+.trip-hero {
+  height:260px;
+  background-size:cover;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+
+button {
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+}
+
+.is-hidden {
+  display:none;
+}
