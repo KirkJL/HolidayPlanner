@@ -59,8 +59,7 @@ function daysBetween(start, end) {
 // =======================
 // FORM SUBMIT (FIXED)
 // =======================
-form.addEventListener("submit", async (e) => {
-  e.preventDefault(); // 🚨 THIS FIXES YOUR PAGE RESET
+document.getElementById("generateBtn").addEventListener("click", async () => {
 
   formMessage.textContent = "Generating trip...";
 
@@ -75,8 +74,91 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  const nights = daysBetween(depart, returnDate);
-  const dest = randomDestination(vibe);
+  const nights = Math.max(
+    1,
+    Math.round((new Date(returnDate) - new Date(depart)) / (1000 * 60 * 60 * 24))
+  );
+
+  const dest = DESTINATIONS[Math.floor(Math.random() * DESTINATIONS.length)];
+
+  // HEADER BG (your new feature)
+  if (window.headerBg) {
+    headerBg.style.backgroundImage = `url(${dest.image})`;
+  }
+
+  // WEATHER
+  let weather = null;
+  try {
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${dest.lat}&longitude=${dest.lon}&current_weather=true`
+    );
+    const data = await res.json();
+    weather = data.current_weather;
+  } catch {}
+
+  // LINKS
+  flightLink.href = `https://www.skyscanner.net/transport/flights/${from}/${dest.airportCode}/${depart}/`;
+  hotelLink.href = `https://www.booking.com/searchresults.html?ss=${dest.bookingQuery}`;
+  mapsLink.href = `https://www.google.com/maps/search/${dest.mapQuery}`;
+
+  // UI UPDATE
+  tripHero.style.backgroundImage = `url(${dest.image})`;
+
+  tripTitle.textContent = dest.name;
+  tripSubtitle.textContent = dest.country;
+
+  tripRoute.textContent = `${from} → ${dest.airportCode}`;
+  tripDates.textContent = `${depart} → ${returnDate}`;
+  tripNights.textContent = `${nights} nights`;
+
+  // WEATHER UI
+  if (weather) {
+    tripWeatherBadge.textContent = `${weather.temperature}°C`;
+    weatherTemp.textContent = `${weather.temperature}°C`;
+    weatherDesc.textContent = "Current conditions";
+
+    weatherMeta.innerHTML = `
+      <div class="weather-meta-item"><span>Wind</span><strong>${weather.windspeed} km/h</strong></div>
+      <div class="weather-meta-item"><span>Direction</span><strong>${weather.winddirection}°</strong></div>
+    `;
+  }
+
+  // SNAPSHOT
+  snapshotGrid.innerHTML = `
+    <div class="snapshot-item"><span class="snapshot-label">Travellers</span><div class="snapshot-value">${travellers}</div></div>
+    <div class="snapshot-item"><span class="snapshot-label">Timezone</span><div class="snapshot-value">${dest.timezone}</div></div>
+    <div class="snapshot-item"><span class="snapshot-label">Currency</span><div class="snapshot-value">${dest.currency}</div></div>
+    <div class="snapshot-item"><span class="snapshot-label">Style</span><div class="snapshot-value">${dest.styleTags.join(", ")}</div></div>
+  `;
+
+  // ITINERARY
+  itineraryDays.innerHTML = "";
+  for (let i = 1; i <= nights; i++) {
+    const el = document.createElement("div");
+    el.className = "day-card";
+    el.innerHTML = `
+      <div class="day-card-head">
+        <h4>Day ${i}</h4>
+        <span class="day-badge">${dest.styleTags[0]}</span>
+      </div>
+      <p class="day-copy">Explore ${dest.name}.</p>
+    `;
+    itineraryDays.appendChild(el);
+  }
+
+  destinationBlurb.textContent = dest.blurb;
+  highlightList.innerHTML = dest.highlights.map(h => `<li>${h}</li>`).join("");
+
+  packingNote.textContent =
+    dest.climateTag === "cold"
+      ? "Bring layers and waterproofs."
+      : "Light clothes and sun protection.";
+
+  emptyState.classList.add("is-hidden");
+  tripCard.classList.remove("is-hidden");
+
+  formMessage.textContent = "Trip ready.";
+});
 
   // =======================
   // WEATHER (DIRECT)
