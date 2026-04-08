@@ -790,3 +790,22 @@ a {
     color: #444444 !important;
   }
 }
+.header-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.35;
+  filter: blur(4px) saturate(1.1);
+  transform: scale(1.05);
+  transition: background-image 0.4s ease, opacity 0.4s ease;
+}
+
+.site-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(5,10,18,0.4), rgba(5,10,18,0.85));
+}
